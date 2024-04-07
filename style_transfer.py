@@ -14,7 +14,13 @@ import numpy as np
 import PIL.Image
 import time
 import functools
-
+import subprocess
+import time
+text_to_say_0 = "안녕하세요. 제 이름은 유나입니다."
+subprocess.call(['say', '-v', 'Yuna', text_to_say_0])
+time.sleep(5)
+greeting_text = "Oh, Hello, don't touch me! I'm running a test."
+subprocess.call(['say', '-v', 'Karen',greeting_text])
 def tensor_to_image(tensor):
   tensor = tensor*255
   tensor = np.array(tensor, dtype=np.uint8)
@@ -208,4 +214,13 @@ train_step(image)
 train_step(image)
 train_step(image)
 tensor_to_image(image).save('static/stylized_image.png')
+
+text_to_say_1 = "Test-run successful."
+text_to_say_2 = "Output saved, local server terminated, Goodbye."
+time.sleep(15)
+subprocess.call(['say', text_to_say_1])
+time.sleep(2)
+subprocess.call(['say', text_to_say_2])
+
+
 print('Done')
