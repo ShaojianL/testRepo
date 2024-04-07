@@ -4,12 +4,17 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Artistic Style Transfer</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
     <h1>Upload Content and Style Images</h1>
     <form action="/transfer" method="post" enctype="multipart/form-data">
-        <input type="file" name="content_image" accept="image/*"><br>
-        <input type="file" name="style_image" accept="image/*"><br>
+        <label for="content_image">Content Image (the image to be stylized):</label><br>
+        <input type="file" id="content_image" name="content_image" accept="image/*"><br>
+        
+        <label for="style_image">Style Image (the style to apply to the content image):</label><br>
+        <input type="file" id="style_image" name="style_image" accept="image/*"><br>
+        
         <input type="submit" value="Transfer Style">
     </form>
 </body>
