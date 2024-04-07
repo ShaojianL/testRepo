@@ -91,12 +91,48 @@ def train_step(image, extractor, style_targets, content_targets, num_style_layer
     opt.apply_gradients([(grad, image)])
     image.assign(clip_0_1(image))
 
+@tf.function()
+def train_step_2(image):
+  with tf.GradientTape() as tape:
+    outputs = extractor(image)
+    loss = style_content_loss(outputs)
+    loss += total_variation_weight*tf.image.total_variation(image)
+
+    grad = tape.gradient(loss, image)
+    opt.apply_gradients([(grad, image)])
+    image.assign(clip_0_1(image))
+
+def vgg_layers(layer_names):
+  """ Creates a VGG model that returns a list of intermediate output values."""
+  # Load our model. Load pretrained VGG, trained on ImageNet data
+  vgg = tf.keras.applications.VGG19(include_top=False, weights='imagenet')
+  vgg.trainable = False
+
+  outputs = [vgg.get_layer(name).output for name in layer_names]
+
+  model = tf.keras.Model([vgg.input], outputs)
+  return model
+
 def parse_arguments():
     parser = argparse.ArgumentParser(description='Neural style transfer with TensorFlow.')
     parser.add_argument('--content_image_url', type=str, help='URL of the content image', required=True)
     parser.add_argument('--style_image_url', type=str, help='URL of the style image', required=True)
     parser.add_argument('--output_image_path', type=str, help='Path to save the stylized image', default='stylized_image.png')
     return parser.parse_args()
+
+########## new feature ########
+
+def high_pass_x_y(image):
+  x_var = image[:, :, 1:, :] - image[:, :, :-1, :]
+  y_var = image[:, 1:, :, :] - image[:, :-1, :, :]
+
+  return x_var, y_var
+
+def total_variation_loss(image):
+  x_deltas, y_deltas = high_pass_x_y(image)
+  return tf.reduce_sum(tf.abs(x_deltas)) + tf.reduce_sum(tf.abs(y_deltas))
+
+
 
 def main():
     args = parse_arguments()
